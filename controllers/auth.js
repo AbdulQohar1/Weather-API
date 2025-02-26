@@ -75,7 +75,16 @@ const login = async (req, res) => {
     error: error.message,
     });
   }
-}
+};
+
+// const verifyEmail = async (req, res) => {
+//   const { email, verificationToken } = req.body;
+//   // check if all fields are provided 
+//   if (!email || !verificationToken) {
+//     return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Please provide email and verification token'});
+//   };
+
+// }
 
 module.exports = {
   signUp,
