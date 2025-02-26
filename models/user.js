@@ -26,11 +26,32 @@ const UserSchema = new mongoose.Schema({
     minLength: 8,
     maxLength: 200,
   },
-  confirmPassword: {
-    type: String,
-    required: [true, 'Please connfirm your password.'],
-    minLength: 8,
-    maxLength: 200,
-  }
-  
-})
+  // confirmPassword: {
+  //   type: String,
+  //   required: [true, 'Please connfirm your password.'],
+  //   minLength: 8,
+  //   maxLength: 200,
+  // },
+}, 
+{
+  timestamps: true,
+});
+
+// hash password before saving
+UserSchema.pre('save', async function(){
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+// create user verification token
+UserSchema.methods.createVerificationToken = function(){
+  const verificationToken = jwt.sign({ 
+      userId: this._id 
+    }, 
+    process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_LIFETIME,
+    }
+  );
+  return verificationToken;
+};
+module.exports = mongoose.model('User', UserSchema);
