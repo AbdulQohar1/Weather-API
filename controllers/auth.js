@@ -1,7 +1,4 @@
 require('dotenv').config();
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 const { StatusCodes } = require('http-status-codes');
 const { sendVerificationEmail } = require('../utils/email');
 const User = require('../models/user');
