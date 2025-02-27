@@ -100,7 +100,8 @@ const verifyEmail = async (req, res) => {
 
 module.exports = {
   signUp,
-  login
+  login,
+  verifyEmail,
 };
 
 
