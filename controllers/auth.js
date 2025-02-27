@@ -74,14 +74,29 @@ const login = async (req, res) => {
   }
 };
 
-// const verifyEmail = async (req, res) => {
-//   const { email, verificationToken } = req.body;
-//   // check if all fields are provided 
-//   if (!email || !verificationToken) {
-//     return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Please provide email and verification token'});
-//   };
+const verifyEmail = async (req, res) => {
+  const { verificationToken } = req.query;
 
-// }
+  try {
+    const decoded = jwt.verify(verificationToken, process.env.JWT_SECRET);
+    const user = await User.findById({ email: decoded.email, verificationToken: token });
+
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: 'Invalid or expired token'});
+    };
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+
+    res.status(StatusCodes.OK).json({ message: 'Email verified successfully'
+    });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Failed to verify email. Please try again',
+    error: error.message,
+    });
+  }
+}
 
 module.exports = {
   signUp,
