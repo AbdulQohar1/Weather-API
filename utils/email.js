@@ -24,6 +24,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     console.log('Verification email sent successfully');
   } catch (error) {
     console.log('Failed to send verification email');
+    console.log(error);
   }
 };
 

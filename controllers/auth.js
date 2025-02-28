@@ -1,4 +1,5 @@
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const { StatusCodes } = require('http-status-codes');
 const { sendVerificationEmail } = require('../utils/email');
 const User = require('../models/user');
@@ -6,6 +7,7 @@ const User = require('../models/user');
 // sign up user
 const signUp = async (req, res) => {
   const { username, email, password } = req.body;
+
   // check if all feilds are provided
   if (!username || !email || !password) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Please provide all fields'});
@@ -20,12 +22,14 @@ const signUp = async (req, res) => {
 
     // create a new user
     const user = await User.create({ username, email, password });
+
+    // create && save verification token
     const verificationToken = user.createVerificationToken();
-    user.verificationToken = verificationToken;
     await user.save();
 
     // send verification email
     await sendVerificationEmail(email, verificationToken);
+    console.log('User details:', user, verificationToken);
     res.status(StatusCodes.CREATED).json({ 
       id: user._id,
       username: user.username,
@@ -49,7 +53,7 @@ const login = async (req, res) => {
     // find user
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: 'Invalid credentials'});
+      return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found! Please sign up.'});
     };
 
     // verify password
