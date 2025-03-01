@@ -64,5 +64,15 @@ UserSchema.methods.comparePassword = async function(password){
   return await bcrypt.compare(password, this.password);
 };
 
+// create auth token
+UserSchema.methods.createAuthToken = (user) => {
+  return jwt.sign(
+    { userId: user._id, email: user.email }, 
+    process.env.JWT_SECRET, 
+    {
+    expiresIn: process.env.JWT_LIFETIME,
+    }
+  );
+}
 
 module.exports = mongoose.model('User', UserSchema);

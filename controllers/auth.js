@@ -89,13 +89,20 @@ const login = async (req, res) => {
       return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found! Please sign up.'});
     };
 
+    if (!user.isVerified) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ 
+        message: 'Please verify your email before logging in'
+      });
+    }
+
     // verify password
     const isPasswordCorrect = await user.comparePassword(password);
     if (!isPasswordCorrect) {
       return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Invalid credentials'});
     };
 
-    const token = user.createVerificationToken();
+    // const token = user.createVerificationToken();
+    const token = createAuthToken(user);
     
     res.status(StatusCodes.OK).json({ 
       id: user._id,
