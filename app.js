@@ -14,6 +14,7 @@ const authRouter = require('./routes/auth');
 // routes
 app.use(express.json());
 app.use('/api/v1/auth', authRouter);
+// app.use('/api/v1/auth', authRouter);
 
 
 const start = async () => {

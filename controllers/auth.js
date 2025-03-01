@@ -42,6 +42,87 @@ const signUp = async (req, res) => {
   }
 };
 
+const verifyEmail = async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    // Verify the token and decode the payload
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { email } = decoded;
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid or expired token' });
+    }
+
+    // Mark the user as verified
+    user.isVerified = true;
+    await user.save();
+
+    res.status(StatusCodes.OK).json({ message: 'Email verified successfully' });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: 'Failed to verify email. Please try again',
+      error: error.message,
+    });
+  }
+};
+
+// const verifyEmail = async (req, res) => {
+//   const { token: verificationToken } = req.query;
+
+//   if (!verificationToken) {
+//     return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Verification token is missing' });
+//   }
+
+//   try {
+//     const decoded = jwt.verify(verificationToken, process.env.JWT_SECRET);
+//     const user = await User.findOne({ _id: decoded.userId });
+
+//     if (!user) {
+//       return res.status(StatusCodes.NOT_FOUND).json({ message: 'Invalid or expired token' });
+//     };
+
+//     user.isVerified = true;
+//     user.verificationToken = undefined;
+//     await user.save();
+
+//     res.status(StatusCodes.OK).json({ message: 'Email verified successfully' });
+//   } catch (error) {
+//     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+//       message: 'Failed to verify email. Please try again',
+//       error: error.message,
+//     });
+//   }
+// };
+
+// const verifyEmail = async (req, res) => {
+//   const { verificationToken } = req.query;
+
+//   try {
+//     const decoded = jwt.verify(verificationToken, process.env.JWT_SECRET);
+//     const user = await User.findOne({_id: decoded.userId});
+
+//     if (!user) {
+//       return res.status(StatusCodes.NOT_FOUND).json({ message: 'Invalid or expired token'});
+//     };
+
+//     user.isVerified = true;
+//     user.verificationToken = undefined;
+//     await user.save();
+
+//     res.status(StatusCodes.OK).json({ message: 'Email verified successfully'
+//     });
+//   } catch (error) {
+//     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Failed to verify email. Please try again',
+//     error: error.message,
+//     });
+//   }
+// }
+
+
 const login = async (req, res) => {
   const { email, password } = req.body;
   // check if all fields are provided
@@ -78,29 +159,6 @@ const login = async (req, res) => {
   }
 };
 
-const verifyEmail = async (req, res) => {
-  const { verificationToken } = req.query;
-
-  try {
-    const decoded = jwt.verify(verificationToken, process.env.JWT_SECRET);
-    const user = await User.findById({ email: decoded.email, verificationToken: token });
-
-    if (!user) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: 'Invalid or expired token'});
-    };
-
-    user.isVerified = true;
-    user.verificationToken = undefined;
-    await user.save();
-
-    res.status(StatusCodes.OK).json({ message: 'Email verified successfully'
-    });
-  } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Failed to verify email. Please try again',
-    error: error.message,
-    });
-  }
-}
 
 module.exports = {
   signUp,
