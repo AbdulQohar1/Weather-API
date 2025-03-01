@@ -29,8 +29,6 @@ const signUp = async (req, res) => {
 
     // send verification email
     await sendVerificationEmail(email, verificationToken);
-    console.log('User details:', user, verificationToken);
-    // console.log('User details:', user, token);
 
     res.status(StatusCodes.CREATED).json({ 
       id: user._id,
@@ -45,15 +43,15 @@ const signUp = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
-  const { token } = req.query;
+  const { verificationToken } = req.query;
 
-  if (!token) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid token'});
+  if (!verificationToken) {
+    return res.status(StatusCodes.NOT_FOUND).json({ message: 'Verification token not found'});
   };
 
   try {
     // find user using verification token
-    const user = await User.findOne({ verificationToken: token });
+    const user = await User.findOne({ verificationToken });
 
     // check if user exists
     if (!user) {

@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const jwt =  require('jsonwebtoken');
 
 // create user schema
-// username, email, and password 
 const UserSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -25,6 +24,10 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'please provide your password.'],
     minLength: 8,
     maxLength: 200,
+  },
+  verificationToken: {
+    type: String,
+    select: false,  
   },
   isVerified: {
     type: Boolean,
