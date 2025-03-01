@@ -51,12 +51,14 @@ UserSchema.pre('save', async function(){
 // create user verification token
 UserSchema.methods.createVerificationToken = function(){
   const verificationToken = jwt.sign({ 
-      userId: this._id 
+      userId: this._id, 
+      email: this.email
     }, 
     process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_LIFETIME,
     }
   );
+  this.verificationToken = verificationToken;
   return verificationToken;
 };
 

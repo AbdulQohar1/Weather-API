@@ -11,10 +11,11 @@ const port = process.env.PORT || 4000;
 // routers
 const authRouter = require('./routes/auth');
 
-// routes
+// middleware
 app.use(express.json());
+
+// routes
 app.use('/api/v1/auth', authRouter);
-// app.use('/api/v1/auth', authRouter);
 
 
 const start = async () => {
