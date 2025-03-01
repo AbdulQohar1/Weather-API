@@ -44,6 +44,38 @@ const signUp = async (req, res) => {
   }
 };
 
+const verifyEmail = async (req, res) => {
+  const { token } = req.query;
+
+  if (!token) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid token'});
+  };
+
+  try {
+    // find user using verification token
+    const user = await User.findOne({ verificationToken: token });
+
+    // check if user exists
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: 'Invalid verification token'});
+    };
+
+    // update user status to verified
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+
+    res.status(StatusCodes.OK).json({ 
+      message: 'Email verified successfully.'
+    });
+
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Failed to verify email. Please try again',
+    error: error.message,
+    });
+  }
+}
+
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -85,6 +117,7 @@ const login = async (req, res) => {
 module.exports = {
   signUp,
   login,
+  verifyEmail,
 
 };
 

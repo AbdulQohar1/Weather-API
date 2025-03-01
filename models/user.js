@@ -31,12 +31,6 @@ const UserSchema = new mongoose.Schema({
     // new users are not verified by default
     default: false, 
   },
-  // confirmPassword: {
-  //   type: String,
-  //   required: [true, 'Please connfirm your password.'],
-  //   minLength: 8,
-  //   maxLength: 200,
-  // },
 }, 
 {
   timestamps: true,
