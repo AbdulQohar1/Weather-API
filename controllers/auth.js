@@ -74,56 +74,50 @@ const verifyEmail = async (req, res) => {
   }
 }
 
-
 const login = async (req, res) => {
   const { email, password } = req.body;
-  // check if all fields are provided
+
+  // Check if all fields are provided
   if (!email || !password) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Please provide email and password'});
-  };
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Please provide email and password' });
+  }
 
-  try{ 
-    // find user
+  try {
+    // Find user by email
     const user = await User.findOne({ email });
-    console.log('User found:', user.email);
-
     if (!user) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found! Please sign up.'});
-    };
-
-    if (!user.isVerified) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ 
-        message: 'Please verify your email before logging in'
-      });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found! Please sign up.' });
     }
-    console.log('User verified:', user.isVerified);
-    console.log('Attempting password comparison');
 
-    // verify password
+    // Check if user is verified
+    if (!user.isVerified) {
+      return res.status(StatusCodes.FORBIDDEN).json({ message: 'Please verify your email before logging in.' });
+    }
+
+    // Verify password
     const isPasswordCorrect = await user.comparePassword(password);
-    console.log('Password verification result:', isPasswordCorrect);
-    if (!isPasswordCorrect) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Invalid credentials'});
-    };
-    console.log('Password verified:', isPasswordCorrect);
 
-    // const token = user.createVerificationToken();
-    const token = createAuthToken();
-    
-    res.status(StatusCodes.OK).json({ 
+    if (!isPasswordCorrect) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Invalid credentials' });
+    }
+
+    // Create token
+    const token = user.createAuthToken();
+
+    res.status(StatusCodes.OK).json({
       id: user._id,
-      user: {email: user.email},
-      token,  
+      user: { email: user.email },
+      token,
       message: 'User logged in successfully'
     });
 
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Failed to login user. Please try again',
-    error: error.message,
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: 'Failed to login user. Please try again',
+      error: error.message,
     });
   }
 };
-
 
 module.exports = {
   signUp,

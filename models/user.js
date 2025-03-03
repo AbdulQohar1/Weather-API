@@ -40,17 +40,21 @@ const UserSchema = new mongoose.Schema({
 });
 
 // hash password before saving
-UserSchema.pre('save', async function(){
+UserSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
 // create user verification token
-UserSchema.methods.createVerificationToken = function(){
-  const verificationToken = jwt.sign({ 
-      userId: this._id, 
+UserSchema.methods.createVerificationToken = function() {
+  const verificationToken = jwt.sign({
+      userId: this._id,
       email: this.email
-    }, 
+    },
     process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_LIFETIME,
     }
@@ -60,17 +64,18 @@ UserSchema.methods.createVerificationToken = function(){
 };
 
 // compare password
-UserSchema.methods.comparePassword = async function(password){
-  return await bcrypt.compare(password, this.password);
+UserSchema.methods.comparePassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
 // create auth token
-UserSchema.methods.createAuthToken = function () {
-  const authToken = jwt.sign(
-    { userId: this._id, email: this.email }, 
-    process.env.JWT_SECRET, 
-    {
-    expiresIn: process.env.JWT_LIFETIME,
+UserSchema.methods.createAuthToken = function() {
+  const authToken = jwt.sign({
+      userId: this._id,
+      email: this.email
+    },
+    process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_LIFETIME,
     }
   );
   return authToken;
