@@ -65,14 +65,15 @@ UserSchema.methods.comparePassword = async function(password){
 };
 
 // create auth token
-UserSchema.methods.createAuthToken = (user) => {
-  return jwt.sign(
-    { userId: user._id, email: user.email }, 
+UserSchema.methods.createAuthToken = function () {
+  const authToken = jwt.sign(
+    { userId: this._id, email: this.email }, 
     process.env.JWT_SECRET, 
     {
     expiresIn: process.env.JWT_LIFETIME,
     }
   );
+  return authToken;
 }
 
 module.exports = mongoose.model('User', UserSchema);

@@ -85,6 +85,8 @@ const login = async (req, res) => {
   try{ 
     // find user
     const user = await User.findOne({ email });
+    console.log('User found:', user.email);
+
     if (!user) {
       return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found! Please sign up.'});
     };
@@ -94,15 +96,19 @@ const login = async (req, res) => {
         message: 'Please verify your email before logging in'
       });
     }
+    console.log('User verified:', user.isVerified);
+    console.log('Attempting password comparison');
 
     // verify password
     const isPasswordCorrect = await user.comparePassword(password);
+    console.log('Password verification result:', isPasswordCorrect);
     if (!isPasswordCorrect) {
       return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Invalid credentials'});
     };
+    console.log('Password verified:', isPasswordCorrect);
 
     // const token = user.createVerificationToken();
-    const token = createAuthToken(user);
+    const token = createAuthToken();
     
     res.status(StatusCodes.OK).json({ 
       id: user._id,
