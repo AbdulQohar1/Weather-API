@@ -1,9 +1,16 @@
 const express = require('express');
 const { 
-  getLocations, 
-  createLocation, 
-  updateLocation, 
-  deleteLocation 
+  setLocation,
+  getUserLocations,
+  deleteLocation,
 } = require('../controllers/location');
-const route =  express.Router();
+const router =  express.Router();
 const authenticateUser = require('../middleware/authenticate');
+
+router.use(authenticateUser);
+
+router.post('/set-location', setLocation);
+router.get('/', getUserLocations);
+router.delete('/:locationId', deleteLocation);
+
+module.exports = router;
