@@ -12,6 +12,7 @@ const port = process.env.PORT || 4000;
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user'); 
 const locationRouter = require('./routes/location');
+const weatherRouter = require('./routes/weather');
 
 // middleware
 app.use(express.json());
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/location', locationRouter);
+app.use('/api/v1/weather', weatherRouter);
 
 const start = async () => {
   try {
