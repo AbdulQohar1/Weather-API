@@ -54,8 +54,9 @@ const setLocation = async (req, res) => {
 
   } catch (error) {
     console.log('Error setting location: ',error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({      message: 'Failed to set location', 
-    error: error.message 
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({     
+      message: 'Failed to set location', 
+      error: error.message 
     });
   }
 };

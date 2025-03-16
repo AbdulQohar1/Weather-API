@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const {UnauthenticatedError} = require('../errors');
+// const {UnauthenticatedError} = require('../errors');
 
 const auth = async (req, res, next) => {
 // check header
@@ -21,7 +21,9 @@ const auth = async (req, res, next) => {
     };
     next();
   } catch (error) {
-    throw new UnauthenticatedError('Authentication invalid.')
+    console.log("Authentication error: ", error);
+    throw new UnauthenticatedError('Authentication invalid.');
+    // res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Not authorized' });
   };
 };
 

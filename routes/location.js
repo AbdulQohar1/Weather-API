@@ -5,7 +5,7 @@ const {
   deleteLocation,
 } = require('../controllers/location');
 const router =  express.Router();
-const authenticateUser = require('../middleware/authenticate');
+const authenticateUser = require('../middleware/authentication');
 
 router.use(authenticateUser);
 

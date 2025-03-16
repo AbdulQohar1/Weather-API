@@ -2,7 +2,6 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const { StatusCodes } = require('http-status-codes');
 const User = require('../models/user');
-const { CommandSucceededEvent } = require('mongodb');
 
 // GET /profile: Get user profile details.
 const userProfile = async (req, res) => {
