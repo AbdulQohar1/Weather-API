@@ -100,6 +100,24 @@ const getHourlyWeatherForecast = async (req, res) => {
   }
 }
 
+// Weather Alerts
+//retrieve active weather alerts.
+const getActiveWeatherAlerts = async (req, res) => {
+  const apiKey = process.env.OPENWEATHER_API_KEY;
+  const url = `https://api.openweathermap.org/data/2.5/alerts?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
+
+
+  try { 
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.log("active weather alerts failed: ", error);
+    throw new Error('Failed to get active weather alerts');
+  }
+}
+
+//POST /alerts/custom: Set custom weather alerts.
+
 
 module.exports = {
   getCurrentWeather,
