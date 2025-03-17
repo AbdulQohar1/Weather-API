@@ -1,7 +1,7 @@
 const Location = require('../models/location');
 const {StatusCodes} = require('http-status-codes');
 const { getWeather,
-  getDailyForecast,
+   getForecast,
  } = require('../utils/weatherInfo');
 
 // Get the current weather for a location.
@@ -53,7 +53,7 @@ const getDailyWeatherForecast = async (req, res) => {
     const [longitude, latitude] = coordinates.coordinates;
 
     // fetch daily forecast data
-    const dailyForecast = await getDailyForecast(latitude, longitude);
+    const dailyForecast = await getForecast(latitude, longitude);
 
     res.status(StatusCodes.OK).json({         
       dailyForecast,
@@ -68,11 +68,42 @@ const getDailyWeatherForecast = async (req, res) => {
   }
 }
 
-// GET /weather/daily: Get the daily forecast for a location.
-// GET /weather/hourly: Get the hourly forecast for a location.
+// Get the hourly forecast for a location.
+const getHourlyWeatherForecast = async (req, res) => {
+  const {userId} = req.user;
+  const {locationId} = req.params;
+
+  try {
+    // get user id && locationId
+    const location = await Location.findOne({userId, _id: locationId});
+
+    if (!location) {
+      return res.status(StatusCodes.NOT_FOUND).json({message: 'Location not found'});
+    };
+
+    const { coordinates } = location;
+    const [longitude, latitude] = coordinates.coordinates;
+
+    // fetch hourly forecast data
+    const hourlyForecast = await getForecast(latitude, longitude);
+
+    res.status(StatusCodes.OK).json({         
+      hourlyForecast,
+      message: 'Hourly forecast data fetched successfully'
+    });
+  } catch (error) {
+    console.log('Error fetching hourly forecast data:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
+      message: 'Failed to fetch hourly forecast data', 
+      error: error.message 
+    });
+  }
+}
+
 
 module.exports = {
   getCurrentWeather,
   getDailyWeatherForecast,
+  getHourlyWeatherForecast,
 };
 

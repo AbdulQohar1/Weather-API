@@ -15,22 +15,48 @@ const getWeather = async (latitude, longitude) => {
 }
 
 // fetch daily forecast for a location.
-const getDailyForecast = async (latitude, longitude) => {
+// const getDailyForecast = async (latitude, longitude) => {
+//   const apiKey = process.env.OPENWEATHER_API_KEY;
+//   const url = `https://api.openweathermap.org/data/2.5/forecast/daily?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+//   // const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+
+//   try {
+//     const response = await axios.get(url);
+//     return response.data;
+//   } catch (error) {
+//     console.log("getDailyForecast data failed: ", error);
+//     throw new Error('Failed to fetch daily forecast data');
+//   }
+// }
+
+const getForecast = async (latitude, longitude, type) => {
+
   const apiKey = process.env.OPENWEATHER_API_KEY;
-  const url = `https://api.openweathermap.org/data/2.5/forecast/daily?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
-  // const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+  let url;
+
+  if ( type === 'daily') {
+    url = `https://api.openweathermap.org/data/2.5/forecast/daily?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+  } else if (type === 'hourly') {
+    url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+  } else {
+    throw new Error('Invalid forecast type');
+  };
 
   try {
     const response = await axios.get(url);
     return response.data;
+
   } catch (error) {
-    console.log("getDailyForecast data failed: ", error);
-    throw new Error('Failed to fetch daily forecast data');
+    console.log("getForecast data failed: ", error);
+    throw new Error(`Failed to fetch ${type} forecast data`);
   }
+
 }
+
 
 
 module.exports = {
   getWeather,
-  getDailyForecast,
+  getForecast,
+  // getDailyForecast,
 }
