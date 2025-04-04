@@ -1,7 +1,8 @@
 const Location = require('../models/location');
 const {StatusCodes} = require('http-status-codes');
-const { getWeather,
-   getForecast,
+const { 
+  getWeather,
+  getForecast,
  } = require('../utils/weatherInfo');
 
 // Get the current weather for a location.
@@ -107,9 +108,30 @@ const getWeatherAlerts = async (req, res) => {
   const {locationId} = req.params;
 
   try {
-    
-  } catch (error) {
+    // retrieve user id && locationId
+    const location = await Location.findOne({userId, _id: locationId});
 
+    if (!location) {
+      return res.status(StatusCodes.NOT_FOUND).json({message: 'Location not found'});
+    };
+
+    const { coordinates } = location;
+    const [longitude, latitude] = coordinates.coordinates;
+
+    // fetch weather alerts data
+    const weatherAlerts = await getWeather(latitude, longitude);
+
+    res.status(StatusCodes.OK).json({
+      weatherAlerts,
+      message: 'Weather alerts data fetched successfully'
+    });
+  } catch (error) {
+    console.log('Error fetching weather alerts data:', error);
+
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
+      message: 'Failed to fetch weather alerts data', 
+      error: error.message 
+    });
   }
 
 }
@@ -121,5 +143,6 @@ module.exports = {
   getCurrentWeather,
   getDailyWeatherForecast,
   getHourlyWeatherForecast,
+  getWeatherAlerts,
 };
 
